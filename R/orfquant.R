@@ -3400,8 +3400,8 @@ load_annotation<-function(path){
   if(is(GTF_annotation$genome,'FaFile')){
     genome_sequence <- GTF_annotation$genome            
   }else{
-    library(GTF_annotation$genome_package,character.only = T)
-    genome_sequence<-get(GTF_annotation$genome_package)
+    library(GTF_annotation$genome,character.only = T)
+    genome_sequence<-get(GTF_annotation$genome)
   }
   GTF_annotation<<-GTF_annotation
   genome_seq<<-genome_sequence
@@ -3634,7 +3634,7 @@ prepare_annotation_files<-function(annotation_directory,twobit_file=NULL,gtf_fil
     
     
     #define exonic bins, including regions overlapping multiple genes
-    nsns<-exonicParts(annotation,linked.to.single.gene.only = F)
+    nsns<-exonicParts(annotation,linked.to.single.gene.only = F,aggregateGenes=T)
     
     
     
@@ -5802,13 +5802,15 @@ create_ORFquant_html_report <- function(input_files, input_sample_names, output_
   
   # get path to RMarkdown file (to be rendered)
   rmd_path <- paste(system.file(package="ORFquant"),"/rmd/ORFquant_template.Rmd",sep="")
+  tmp_dir <- dirname(output_file)
   
   sink(file = paste(output_file,"_ORFquant_report_output.txt",sep = ""))
   # render RMarkdown file > html report
   suppressWarnings(render(rmd_path, 
                           params = list(input_files = input_files,
                                         input_sample_names = input_sample_names),
-                          output_file = output_file))
+                          output_file = output_file,
+                          intermediates_dir = tmp_dir))
   sink()
 }
 
